@@ -22,7 +22,7 @@ export function Navbar() {
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild className="border-slate-200 hover:bg-slate-100">
+            <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
               <Link href="/login">Log in</Link>
             </Button>
             <Button
@@ -51,7 +51,7 @@ export function Navbar() {
               </Link>
               <nav className="flex flex-col gap-4">{/* Navigation links removed */}</nav>
               <div className="flex flex-col gap-2 mt-4">
-                <Button variant="outline" size="sm" asChild className="border-slate-200 hover:bg-slate-100">
+                <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
                   <Link href="/login">Log in</Link>
                 </Button>
                 <Button

@@ -503,7 +503,7 @@ export default function StarterKitsDirectory() {
                         size="sm"
                         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="w-8 h-8 p-0 border-slate-200 hover:bg-slate-100"
+                        className="w-8 h-8 p-0 border-slate-200 hover:border-slate-300 disabled:border-slate-200 disabled:text-slate-400"
                       >
                         <ChevronLeft className="h-4 w-4" />
                         <span className="sr-only">Previous page</span>
@@ -513,13 +513,13 @@ export default function StarterKitsDirectory() {
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                           <Button
                             key={page}
-                            variant={currentPage === page ? "default" : "outline"}
+                            variant={currentPage === page ? "outline" : "outline"}
                             size="sm"
                             onClick={() => handlePageChange(page)}
                             className={`w-8 h-8 ${
                               currentPage === page 
-                                ? "bg-indigo-500 hover:bg-indigo-600" 
-                                : "border-slate-200 hover:bg-slate-100"
+                                ? "bg-slate-50 border-slate-300 text-slate-800" 
+                                : "border-slate-200 text-slate-800 hover:border-slate-300"
                             }`}
                           >
                             {page}
@@ -532,7 +532,7 @@ export default function StarterKitsDirectory() {
                         size="sm"
                         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="w-8 h-8 p-0 border-slate-200 hover:bg-slate-100"
+                        className="w-8 h-8 p-0 border-slate-200 hover:border-slate-300 disabled:border-slate-200 disabled:text-slate-400"
                       >
                         <ChevronRight className="h-4 w-4" />
                         <span className="sr-only">Next page</span>
