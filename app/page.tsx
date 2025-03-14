@@ -441,12 +441,12 @@ export default function StarterKitsDirectory() {
                 placeholder="Search by name, description or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border-slate-200 hover:border-slate-300 focus-visible:ring-primary-500"
+                className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus-visible:ring-primary-500">
+                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -460,7 +460,7 @@ export default function StarterKitsDirectory() {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus-visible:ring-primary-500">
+                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -518,7 +518,7 @@ export default function StarterKitsDirectory() {
                             onClick={() => handlePageChange(page)}
                             className={`w-8 h-8 ${
                               currentPage === page 
-                                ? "bg-primary-500 hover:bg-primary-600" 
+                                ? "bg-indigo-500 hover:bg-indigo-600" 
                                 : "border-slate-200 hover:bg-slate-100"
                             }`}
                           >
