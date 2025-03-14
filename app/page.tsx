@@ -1,12 +1,13 @@
 "use client"
 
+
 import { useState } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Copy,
@@ -366,7 +367,7 @@ function getTagColor(tag: string) {
 
 export default function StarterKitsDirectory() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [sortBy, setSortBy] = useState("popular")
   const [currentPage, setCurrentPage] = useState(1)
   const [favorites, setFavorites] = useState<number[]>([])
@@ -377,14 +378,16 @@ export default function StarterKitsDirectory() {
     setFavorites((prev) => (prev.includes(id) ? prev.filter((kitId) => kitId !== id) : [...prev, id]))
   }
 
-  // Filter starter kits based on search query and selected category
+  // Filter starter kits based on search query and selected categories
   const filteredKits = starterKits.filter((kit) => {
     const matchesSearch =
       kit.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       kit.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       kit.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
 
-    const matchesCategory = selectedCategory === "all" || kit.category === selectedCategory
+    const matchesCategory = 
+      selectedCategories.length === 0 || 
+      kit.tags.some(tag => selectedCategories.includes(tag.toLowerCase()))
 
     return matchesSearch && matchesCategory
   })
@@ -428,8 +431,8 @@ export default function StarterKitsDirectory() {
       <main className="flex-1">
         <div className="container mx-auto py-20 px-4">
           <div className="flex flex-col items-center mb-8 text-center">
-            <h1 className="text-3xl font-bold mb-2">GitHub Starter Kits</h1>
-            <p className="text-muted-foreground max-w-2xl">
+            <h1 className="text-3xl font-bold mb-2 text-slate-900">GitHub Starter Kits</h1>
+            <p className="text-slate-500 max-w-2xl">
               Discover and use high-quality starter templates for your next project. All kits are open-source and ready
               to use.
             </p>
@@ -445,82 +448,338 @@ export default function StarterKitsDirectory() {
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800">
-                  <SelectValue placeholder="Category" />
+              <Select 
+                value={selectedCategories} 
+                onValueChange={(value) => {
+                  // Handle checkbox toggle
+                  setSelectedCategories((prev) => {
+                    const valueArray = Array.isArray(value) ? value : [value];
+                    const category = valueArray[valueArray.length - 1];
+                    
+                    if (prev.includes(category)) {
+                      return prev.filter(c => c !== category);
+                    } else {
+                      return [...prev, category];
+                    }
+                  });
+                }}
+              >
+                <SelectTrigger 
+                  className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
+                >
+                  <SelectValue>
+                    {selectedCategories.length === 0 ? "Select category" : `${selectedCategories.length} selected`}
+                  </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="border-slate-200">
-                  <SelectItem 
-                    value="all" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
-                  >
-                    All Categories
-                  </SelectItem>
-                  <SelectItem 
-                    value="web" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
-                  >
-                    Web
-                  </SelectItem>
-                  <SelectItem 
-                    value="mobile" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
-                  >
-                    Mobile
-                  </SelectItem>
-                  <SelectItem 
-                    value="desktop" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
-                  >
-                    Desktop
-                  </SelectItem>
-                  <SelectItem 
-                    value="backend" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
-                  >
-                    Backend
-                  </SelectItem>
-                  <SelectItem 
-                    value="tools" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
-                  >
-                    Tools
-                  </SelectItem>
+                <SelectContent className="border-slate-200 max-h-[20rem] relative">
+                  <div className="overflow-y-auto pb-[40px]" style={{ maxHeight: "calc(20rem - 40px)" }}>
+                    {/* Frontend/Web Technologies */}
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Frontend & Web</SelectLabel>
+                      {["next.js", "react", "vue.js", "svelte"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+
+                    {/* Languages */}
+                    <SelectSeparator className="my-2" />
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Languages</SelectLabel>
+                      {["typescript", "javascript"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+
+                    {/* Styling */}
+                    <SelectSeparator className="my-2" />
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Styling</SelectLabel>
+                      {["tailwind"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+
+                    {/* Mobile */}
+                    <SelectSeparator className="my-2" />
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Mobile Development</SelectLabel>
+                      {["mobile", "flutter", "react-native"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+
+                    {/* Backend */}
+                    <SelectSeparator className="my-2" />
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Backend & Server</SelectLabel>
+                      {["express", "node.js", "django", "php"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+
+                    {/* Database */}
+                    <SelectSeparator className="my-2" />
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Database</SelectLabel>
+                      {["mongodb", "postgresql"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+
+                    {/* Specialized */}
+                    <SelectSeparator className="my-2" />
+                    <SelectGroup>
+                      <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Specialized</SelectLabel>
+                      {["dashboard", "docker", "go"].map(category => (
+                        <div 
+                          key={category} 
+                          className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
+                          onClick={() => {
+                            setSelectedCategories(prev => 
+                              prev.includes(category) 
+                                ? prev.filter(c => c !== category)
+                                : [...prev, category]
+                            );
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mr-2 accent-[oklch(0.6112_0.1906_271.6)] cursor-pointer"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => {
+                              setSelectedCategories(prev => 
+                                prev.includes(category) 
+                                  ? prev.filter(c => c !== category)
+                                  : [...prev, category]
+                              );
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="text-slate-600">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        </div>
+                      ))}
+                    </SelectGroup>
+                  </div>
+
+                  <div className="sticky bottom-0 left-0 right-0 p-2 bg-white border-t border-slate-200">
+                    <Button
+                      variant="ghost"
+                      className={`w-full h-8 text-sm ${
+                        selectedCategories.length > 0 
+                          ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100" 
+                          : "text-slate-400 cursor-not-allowed"
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSelectedCategories([])
+                      }}
+                      disabled={selectedCategories.length === 0}
+                    >
+                      Clear filters {selectedCategories.length > 0 ? `(${selectedCategories.length})` : ""}
+                    </Button>
+                  </div>
                 </SelectContent>
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800">
+                <SelectTrigger 
+                  className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
+                >
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-200">
+                <SelectContent className="border-slate-200" hideScrollArrows hideDownIcon>
                   <SelectItem 
                     value="popular" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                    className="text-slate-600 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
                   >
                     Popular
                   </SelectItem>
                   <SelectItem 
                     value="forks" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                    className="text-slate-600 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
                   >
                     Most Forks
                   </SelectItem>
                   <SelectItem 
                     value="recent" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                    className="text-slate-600 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
                   >
                     Recently Updated
                   </SelectItem>
                   <SelectItem 
                     value="name" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                    className="text-slate-600 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
                   >
                     Name (A-Z)
                   </SelectItem>
                   <SelectItem 
                     value="name-desc" 
-                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                    className="text-slate-600 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
                   >
                     Name (Z-A)
                   </SelectItem>
@@ -619,7 +878,7 @@ export default function StarterKitsDirectory() {
                     variant="link"
                     onClick={() => {
                       setSearchQuery("")
-                      setSelectedCategory("all")
+                      setSelectedCategories([])
                     }}
                   >
                     Clear filters
