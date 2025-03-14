@@ -10,7 +10,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="w-full bg-background">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
@@ -29,8 +29,7 @@ export function Navbar() {
               variant="default"
               size="sm"
               asChild
-              style={{ backgroundColor: "#a855f7", borderColor: "#a855f7" }}
-              className="hover:bg-[#9333ea]"
+              className="hover:bg-primary/90"
             >
               <Link href="/signup">Sign up</Link>
             </Button>
@@ -60,8 +59,7 @@ export function Navbar() {
                   variant="default"
                   asChild
                   onClick={() => setOpen(false)}
-                  style={{ backgroundColor: "#a855f7", borderColor: "#a855f7" }}
-                  className="hover:bg-[#9333ea]"
+                  className="hover:bg-primary/90"
                 >
                   <Link href="/signup">Sign up</Link>
                 </Button>
@@ -70,7 +68,7 @@ export function Navbar() {
           </SheetContent>
         </Sheet>
       </div>
-    </header>
+    </nav>
   )
 }
 

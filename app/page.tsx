@@ -36,6 +36,29 @@ import {
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 
+// Add these interfaces at the top of the file, after the imports
+interface Kit {
+  id: number
+  name: string
+  description: string
+  category: string
+  tags: string[]
+  stars: number
+  forks: number
+  lastUpdated: string
+  updatedAt: Date
+  author: string
+  repoUrl: string
+  demoUrl: string | null
+  featured: boolean
+}
+
+interface StarterKitCardProps {
+  kit: Kit
+  isFavorite: boolean
+  onToggleFavorite: (id: number) => void
+}
+
 // Sample data for starter kits
 const starterKits = [
   {
@@ -331,7 +354,7 @@ export default function StarterKitsDirectory() {
   const paginatedKits = sortedKits.slice(startIndex, startIndex + itemsPerPage)
 
   // Handle page change
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page)
     // Scroll to top of results
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -341,7 +364,7 @@ export default function StarterKitsDirectory() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1">
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-20 px-4">
           <div className="flex flex-col items-center mb-8 text-center">
             <h1 className="text-3xl font-bold mb-2">GitHub Starter Kits</h1>
             <p className="text-muted-foreground max-w-2xl">
@@ -498,31 +521,32 @@ export default function StarterKitsDirectory() {
   )
 }
 
-function StarterKitCard({ kit, isFavorite, onToggleFavorite }) {
+function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardProps) {
   return (
-    <Card className="h-full flex flex-col relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-3 right-3 z-10 hover:bg-background/80"
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          onToggleFavorite(kit.id)
-        }}
-      >
-        <Heart className={`h-5 w-5 ${isFavorite ? "fill-[#a855f7] text-[#a855f7]" : "text-muted-foreground"}`} />
-        <span className="sr-only">{isFavorite ? "Remove from favorites" : "Add to favorites"}</span>
-      </Button>
-
+    <Card className="h-full flex flex-col">
       <CardHeader>
-        <div className="flex justify-between items-start pr-8">
+        <div className="flex justify-between items-start">
           <CardTitle className="text-xl">{kit.name}</CardTitle>
-          {kit.featured && (
-            <Badge variant="secondary" className="ml-2">
-              Featured
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {kit.featured && (
+              <Badge variant="secondary">
+                Featured
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-background/80"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onToggleFavorite(kit.id)
+              }}
+            >
+              <Heart className={`h-5 w-5 ${isFavorite ? "fill-[oklch(0.586_0.253_17.585)] text-[oklch(0.586_0.253_17.585)]" : "text-muted-foreground"}`} />
+              <span className="sr-only">{isFavorite ? "Remove from favorites" : "Add to favorites"}</span>
+            </Button>
+          </div>
         </div>
         <CardDescription className="line-clamp-2">{kit.description}</CardDescription>
       </CardHeader>
@@ -547,33 +571,17 @@ function StarterKitCard({ kit, isFavorite, onToggleFavorite }) {
         </div>
         <div className="text-sm text-muted-foreground">Updated {kit.lastUpdated}</div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2">
-        <div className="flex gap-2 w-full">
-          <Button asChild className="flex-1" style={{ backgroundColor: "black", borderColor: "black" }}>
-            <Link href={kit.repoUrl} target="_blank" rel="noopener noreferrer">
-              <Github className="w-4 h-4 mr-2" />
-              View Repo
-            </Link>
-          </Button>
-          <Button variant="outline" className="px-3">
-            <Copy className="w-4 h-4" />
-            <span className="sr-only">Copy Clone URL</span>
-          </Button>
-        </div>
-        <div className="flex gap-2 w-full">
-          <Button variant="secondary" className="flex-1">
-            <Download className="w-4 h-4 mr-2" />
-            Download
-          </Button>
-          {kit.demoUrl && (
-            <Button variant="outline" asChild className="flex-1">
-              <Link href={kit.demoUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Demo
-              </Link>
-            </Button>
-          )}
-        </div>
+      <CardFooter className="flex gap-2">
+        <Button variant="secondary" className="flex-1">
+          <Download className="w-4 h-4 mr-2" />
+          Download
+        </Button>
+        <Button asChild className="flex-1" style={{ backgroundColor: "black", borderColor: "black" }}>
+          <Link href={kit.repoUrl} target="_blank" rel="noopener noreferrer">
+            <Github className="w-4 h-4 mr-2" />
+            View Repo
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   )
