@@ -441,44 +441,116 @@ export default function StarterKitsDirectory() {
                 placeholder="Search by name, description or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 placeholder:text-slate-500"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="web">Web</SelectItem>
-                  <SelectItem value="mobile">Mobile</SelectItem>
-                  <SelectItem value="desktop">Desktop</SelectItem>
-                  <SelectItem value="backend">Backend</SelectItem>
-                  <SelectItem value="tools">Tools</SelectItem>
+                <SelectContent className="border-slate-200">
+                  <SelectItem 
+                    value="all" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    All Categories
+                  </SelectItem>
+                  <SelectItem 
+                    value="web" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Web
+                  </SelectItem>
+                  <SelectItem 
+                    value="mobile" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Mobile
+                  </SelectItem>
+                  <SelectItem 
+                    value="desktop" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Desktop
+                  </SelectItem>
+                  <SelectItem 
+                    value="backend" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Backend
+                  </SelectItem>
+                  <SelectItem 
+                    value="tools" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Tools
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="popular">Popular</SelectItem>
-                  <SelectItem value="forks">Most Forks</SelectItem>
-                  <SelectItem value="recent">Recently Updated</SelectItem>
-                  <SelectItem value="name">Name (A-Z)</SelectItem>
-                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                <SelectContent className="border-slate-200">
+                  <SelectItem 
+                    value="popular" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Popular
+                  </SelectItem>
+                  <SelectItem 
+                    value="forks" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Most Forks
+                  </SelectItem>
+                  <SelectItem 
+                    value="recent" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Recently Updated
+                  </SelectItem>
+                  <SelectItem 
+                    value="name" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Name (A-Z)
+                  </SelectItem>
+                  <SelectItem 
+                    value="name-desc" 
+                    className="text-slate-600 data-[highlighted]:bg-slate-200 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
+                  >
+                    Name (Z-A)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <Tabs defaultValue="all" className="mb-8">
-            <TabsList className="mb-4">
-              <TabsTrigger value="all">All Kits</TabsTrigger>
-              <TabsTrigger value="featured">Featured</TabsTrigger>
-              {favorites.length > 0 && <TabsTrigger value="favorites">Favorites ({favorites.length})</TabsTrigger>}
+            <TabsList className="mb-4 bg-slate-100">
+              <TabsTrigger 
+                value="all" 
+                className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600"
+              >
+                All Kits
+              </TabsTrigger>
+              <TabsTrigger 
+                value="featured"
+                className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600"
+              >
+                Featured
+              </TabsTrigger>
+              {favorites.length > 0 && (
+                <TabsTrigger 
+                  value="favorites"
+                  className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600"
+                >
+                  Favorites ({favorites.length})
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="all">
