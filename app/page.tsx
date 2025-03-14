@@ -302,6 +302,68 @@ function getTagIcon(tag: string) {
   }
 }
 
+// Add this new function after getTagIcon
+function getTagColor(tag: string) {
+  switch (tag.toLowerCase()) {
+    // Frontend/Web Technologies (Sky-600)
+    case "next.js":
+    case "react":
+    case "react-native":
+    case "vue.js":
+    case "svelte":
+    case "sveltekit":
+      return "oklch(0.609 0.126 221.723)"
+    
+    // Languages/File Types (Indigo-600)
+    case "typescript":
+    case "javascript":
+      return "oklch(0.591 0.191 264.043)"
+    
+    // Styling (Fuchsia-600)
+    case "tailwind":
+      return "oklch(0.585 0.248 332.394)"
+    
+    // Mobile Development (Teal-600)
+    case "mobile":
+    case "expo":
+    case "flutter":
+    case "dart":
+    case "cross-platform":
+      return "oklch(0.576 0.121 196.844)"
+
+    // Backend/Server (Emerald-600)
+    case "express":
+    case "node.js":
+    case "api":
+    case "django":
+    case "python":
+    case "laravel":
+    case "php":
+      return "oklch(0.561 0.139 160.503)"
+
+    // Database (Blue-600)
+    case "mongodb":
+    case "postgresql":
+      return "oklch(0.570 0.191 242.493)"
+
+    // Web/Frontend (Violet-600)
+    case "web":
+    case "frontend":
+      return "oklch(0.597 0.196 282.078)"
+
+    // Specialized Categories (Purple-600)
+    case "dashboard":
+    case "charts":
+    case "go":
+    case "docker":
+      return "oklch(0.591 0.219 292.409)"
+
+    // Default (Slate-600)
+    default:
+      return "oklch(0.518 0.017 255.121)"
+  }
+}
+
 export default function StarterKitsDirectory() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -332,14 +394,14 @@ export default function StarterKitsDirectory() {
     switch (sortBy) {
       case "popular":
         return b.stars * 1.5 + b.forks - (a.stars * 1.5 + a.forks)
-      case "stars":
-        return b.stars - a.stars
       case "forks":
         return b.forks - a.forks
       case "recent":
         return b.updatedAt.getTime() - a.updatedAt.getTime()
       case "name":
         return a.name.localeCompare(b.name)
+      case "name-desc":
+        return b.name.localeCompare(a.name)
       default:
         return b.stars * 1.5 + b.forks - (a.stars * 1.5 + a.forks)
     }
@@ -379,12 +441,12 @@ export default function StarterKitsDirectory() {
                 placeholder="Search by name, description or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
+                className="w-full border-slate-200 hover:border-slate-300 focus-visible:ring-primary-500"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus-visible:ring-primary-500">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -398,15 +460,15 @@ export default function StarterKitsDirectory() {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus-visible:ring-primary-500">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="popular">Popular</SelectItem>
-                  <SelectItem value="stars">Most Liked</SelectItem>
                   <SelectItem value="forks">Most Forks</SelectItem>
                   <SelectItem value="recent">Recently Updated</SelectItem>
                   <SelectItem value="name">Name (A-Z)</SelectItem>
+                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -441,7 +503,7 @@ export default function StarterKitsDirectory() {
                         size="sm"
                         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="w-8 h-8 p-0"
+                        className="w-8 h-8 p-0 border-slate-200 hover:bg-slate-100"
                       >
                         <ChevronLeft className="h-4 w-4" />
                         <span className="sr-only">Previous page</span>
@@ -454,7 +516,11 @@ export default function StarterKitsDirectory() {
                             variant={currentPage === page ? "default" : "outline"}
                             size="sm"
                             onClick={() => handlePageChange(page)}
-                            className={`w-8 h-8 ${currentPage === page ? "bg-[#a855f7] hover:bg-[#9333ea]" : ""}`}
+                            className={`w-8 h-8 ${
+                              currentPage === page 
+                                ? "bg-primary-500 hover:bg-primary-600" 
+                                : "border-slate-200 hover:bg-slate-100"
+                            }`}
                           >
                             {page}
                           </Button>
@@ -466,7 +532,7 @@ export default function StarterKitsDirectory() {
                         size="sm"
                         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="w-8 h-8 p-0"
+                        className="w-8 h-8 p-0 border-slate-200 hover:bg-slate-100"
                       >
                         <ChevronRight className="h-4 w-4" />
                         <span className="sr-only">Next page</span>
@@ -523,13 +589,16 @@ export default function StarterKitsDirectory() {
 
 function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardProps) {
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col border-slate-200">
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl">{kit.name}</CardTitle>
           <div className="flex items-center gap-2">
             {kit.featured && (
-              <Badge variant="secondary">
+              <Badge variant="secondary" style={{ 
+                backgroundColor: "oklch(0.93 0.034 272.788)",
+                color: "oklch(0.511 0.262 276.966)"
+              }}>
                 Featured
               </Badge>
             )}
@@ -552,12 +621,24 @@ function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardPro
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="flex flex-wrap gap-2 mb-4">
-          {kit.tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs flex items-center">
-              {getTagIcon(tag)}
-              {tag}
-            </Badge>
-          ))}
+          {kit.tags.map((tag) => {
+            const tagColor = getTagColor(tag);
+            return (
+              <Badge 
+                key={tag} 
+                variant="outline" 
+                className="text-xs flex items-center border-slate-200" 
+                style={{ 
+                  color: tagColor,
+                }}
+              >
+                <span style={{ color: tagColor }}>
+                  {getTagIcon(tag)}
+                </span>
+                {tag}
+              </Badge>
+            );
+          })}
         </div>
         <div className="flex items-center text-sm text-muted-foreground gap-4 mb-2">
           <div className="flex items-center">
@@ -572,11 +653,18 @@ function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardPro
         <div className="text-sm text-muted-foreground">Updated {kit.lastUpdated}</div>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button variant="secondary" className="flex-1">
+        <Button 
+          variant="secondary" 
+          className="flex-1 bg-slate-100 hover:bg-slate-200 border-slate-200"
+        >
           <Download className="w-4 h-4 mr-2" />
           Download
         </Button>
-        <Button asChild className="flex-1" style={{ backgroundColor: "black", borderColor: "black" }}>
+        <Button 
+          asChild 
+          variant="dark"
+          className="flex-1"
+        >
           <Link href={kit.repoUrl} target="_blank" rel="noopener noreferrer">
             <Github className="w-4 h-4 mr-2" />
             View Repo
