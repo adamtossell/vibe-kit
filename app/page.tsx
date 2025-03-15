@@ -34,6 +34,7 @@ import {
   DockIcon as Docker,
   Braces,
   Workflow,
+  X,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 
@@ -438,8 +439,8 @@ export default function StarterKitsDirectory() {
             </p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 mb-8">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="flex-1 md:max-w-[480px]">
               <Input
                 placeholder="Search by name, description or tags..."
                 value={searchQuery}
@@ -447,31 +448,19 @@ export default function StarterKitsDirectory() {
                 className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 placeholder:text-slate-500"
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 md:ml-auto">
               <Select 
-                value={selectedCategories} 
-                onValueChange={(value) => {
-                  // Handle checkbox toggle
-                  setSelectedCategories((prev) => {
-                    const valueArray = Array.isArray(value) ? value : [value];
-                    const category = valueArray[valueArray.length - 1];
-                    
-                    if (prev.includes(category)) {
-                      return prev.filter(c => c !== category);
-                    } else {
-                      return [...prev, category];
-                    }
-                  });
-                }}
+                value={selectedCategories.length > 0 ? "has-selected" : undefined}
+                onValueChange={() => {}}
               >
                 <SelectTrigger 
-                  className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
+                  className="w-full sm:w-[160px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
                 >
-                  <SelectValue>
-                    {selectedCategories.length === 0 ? "Select category" : `${selectedCategories.length} selected`}
+                  <SelectValue placeholder="Select category" className="text-slate-500 data-[state=placeholder]:text-slate-500">
+                    {selectedCategories.length > 0 ? `${selectedCategories.length} selected` : "Select category"}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="border-slate-200 max-h-[20rem] relative">
+                <SelectContent className="border-slate-200">
                   <div className="overflow-y-auto pb-[40px]" style={{ maxHeight: "calc(20rem - 40px)" }}>
                     {/* Frontend/Web Technologies */}
                     <SelectGroup>
@@ -748,11 +737,11 @@ export default function StarterKitsDirectory() {
 
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger 
-                  className="w-full sm:w-[180px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
+                  className="w-full sm:w-[160px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
                 >
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-200" hideScrollArrows hideDownIcon>
+                <SelectContent className="border-slate-200">
                   <SelectItem 
                     value="popular" 
                     className="text-slate-600 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-800"
@@ -788,8 +777,44 @@ export default function StarterKitsDirectory() {
             </div>
           </div>
 
-          <Tabs defaultValue="all" className="mb-8">
-            <TabsList className="mb-4 bg-slate-100">
+          {/* Add the active filters row here */}
+          {selectedCategories.length > 0 && (
+            <div className="mt-4">
+              {selectedCategories.map((category) => {
+                const tagColor = getTagColor(category);
+                return (
+                  <Badge 
+                    key={category} 
+                    variant="outline" 
+                    className="text-xs py-[2px] px-[10px] mr-2 inline-flex items-center border-slate-200"
+                    style={{ 
+                      color: tagColor,
+                    }}
+                  >
+                    {category}
+                    <button
+                      onClick={() => setSelectedCategories(prev => prev.filter(c => c !== category))}
+                      className="ml-1 hover:text-destructive"
+                      style={{ 
+                        color: tagColor,
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                );
+              })}
+              <span
+                onClick={() => setSelectedCategories([])}
+                className="text-[14px] text-slate-500 hover:text-slate-800 cursor-pointer ml-3"
+              >
+                Clear all
+              </span>
+            </div>
+          )}
+
+          <Tabs defaultValue="all" className="mt-4 mb-8">
+            <TabsList className="mb-6 bg-slate-100">
               <TabsTrigger 
                 value="all" 
                 className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600"
