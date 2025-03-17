@@ -543,9 +543,8 @@ function getTagColor(tag: string) {
 
     // Specialized Categories (Purple-600)
     case "dashboard":
-    case "charts":
-    case "go":
     case "docker":
+    case "go":
       return "oklch(0.591 0.219 292.409)"
 
     // Default (Slate-600)
@@ -1196,7 +1195,11 @@ function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardPro
             {kit.forks.toLocaleString()}
           </div>
         </div>
-        <div className="text-sm text-muted-foreground">Updated {kit.lastUpdated}</div>
+        <div className="text-sm text-muted-foreground">
+          by <Link href={`https://github.com/${kit.author}`} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
+            {kit.author}
+          </Link>
+        </div>
       </CardContent>
       <CardFooter className="flex gap-2">
         <Button 
@@ -1220,4 +1223,3 @@ function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardPro
     </Card>
   )
 }
-

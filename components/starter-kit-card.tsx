@@ -225,21 +225,19 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
             <GitFork className="h-4 w-4 mr-1 text-slate-400" />
             <span>{kit.forks.toLocaleString()}</span>
           </div>
-          <div className="text-xs text-slate-400 ml-auto">{kit.lastUpdated}</div>
+          <div className="text-xs text-slate-400 ml-auto">
+            by <a
+              href={`https://github.com/${kit.author}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary hover:underline"
+            >
+              {kit.author}
+            </a>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex flex-col space-y-2">
-        <div className="flex items-center text-sm text-slate-500">
-          <span>by </span>
-          <a
-            href={`https://github.com/${kit.author}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-1 font-medium text-primary hover:underline"
-          >
-            {kit.author}
-          </a>
-        </div>
         <div className="flex space-x-2 w-full">
           <Button
             variant="outline"
