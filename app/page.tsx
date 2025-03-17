@@ -470,6 +470,7 @@ export default function StarterKitsDirectory() {
                 placeholder="Search by name, description or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onClear={() => setSearchQuery("")}
                 className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 placeholder:text-slate-500"
               />
             </div>

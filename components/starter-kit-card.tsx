@@ -155,6 +155,32 @@ export function getTagColor(tag: string) {
   }
 }
 
+// Function to generate a direct download URL for a GitHub repository
+function getDownloadUrl(kit: Kit): string {
+  // If there's a specific download URL provided, use that
+  if (kit.downloadUrl) return kit.downloadUrl;
+  
+  // Otherwise, construct a ZIP download URL from the repository URL
+  // GitHub repo URLs are typically in the format: https://github.com/{owner}/{repo}
+  const repoUrl = kit.repoUrl;
+  
+  // Check if it's a GitHub repository
+  if (repoUrl.includes('github.com')) {
+    // Extract the owner and repo name from the URL
+    const urlParts = repoUrl.split('github.com/')[1];
+    if (urlParts) {
+      // For GitHub repositories, we'll create a download URL that points to the ZIP archive
+      // We'll use 'main' as the default branch, as it's becoming the standard
+      // If the repository uses a different default branch, the user will be redirected to GitHub
+      // where they can select the correct branch
+      return `https://github.com/${urlParts}/archive/refs/heads/main.zip`;
+    }
+  }
+  
+  // Fallback to the repository URL if we can't construct a download URL
+  return repoUrl;
+}
+
 export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardProps) {
   return (
     <Card className="overflow-hidden border border-slate-200">
@@ -236,7 +262,7 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
             className="flex-1 h-8 text-xs border-slate-200 hover:border-slate-300 text-slate-600"
             asChild
           >
-            <a href={kit.downloadUrl || kit.repoUrl} target="_blank" rel="noopener noreferrer">
+            <a href={getDownloadUrl(kit)} target="_blank" rel="noopener noreferrer">
               <Download className="h-3.5 w-3.5 mr-1" />
               Download
             </a>
