@@ -9,6 +9,8 @@ import { Navbar } from '@/components/navbar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import { Github } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 export default function SettingsPage() {
   const { user, loading, signOut } = useAuth()
@@ -41,10 +43,10 @@ export default function SettingsPage() {
               <p className="text-red-600 font-medium">❌ You need to be signed in to access settings</p>
             </div>
             <div className="flex space-x-4 mt-4">
-              <Button asChild className="w-full">
+              <Button asChild variant="outline" className="w-full">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild variant="outline" className="w-full">
+              <Button asChild className="w-full">
                 <Link href="/signup">Sign up</Link>
               </Button>
             </div>
@@ -53,6 +55,10 @@ export default function SettingsPage() {
       </div>
     )
   }
+
+  // Determine authentication providers
+  const hasGithubAuth = user.app_metadata?.provider === 'github'
+  const hasEmailAuth = user.app_metadata?.provider === 'email' || !user.app_metadata?.provider
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -149,6 +155,29 @@ export default function SettingsPage() {
                         className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       />
                       <p className="text-xs text-slate-500">Email cannot be changed</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Authentication Methods</Label>
+                      <div className="flex flex-col gap-2 mt-2">
+                        {hasEmailAuth && (
+                          <div className="flex items-center gap-2 p-2 border rounded-md">
+                            <Badge variant="outline" className="bg-slate-100">Email</Badge>
+                            <span className="text-sm">Signed in with email and password</span>
+                          </div>
+                        )}
+                        
+                        {hasGithubAuth && (
+                          <div className="flex items-center gap-2 p-2 border rounded-md">
+                            <Badge variant="outline" className="bg-slate-100 flex items-center gap-1">
+                              <Github size={14} />
+                              <span>GitHub</span>
+                            </Badge>
+                            <span className="text-sm">Connected with GitHub account</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500">These are the methods you can use to sign in to your account</p>
                     </div>
                   </CardContent>
                   <CardFooter>

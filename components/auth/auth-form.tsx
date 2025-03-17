@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Github } from 'lucide-react'
 
 export function AuthForm() {
   const [email, setEmail] = useState('')
@@ -103,6 +104,31 @@ export function AuthForm() {
     }
   }
 
+  const handleGitHubSignIn = async () => {
+    setLoading(true)
+    setMessage(null)
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      
+      console.log('GitHub sign in response:', { data, error })
+      
+      if (error) throw error
+    } catch (error: any) {
+      console.error('GitHub sign in error:', error)
+      setMessage({
+        type: 'error',
+        text: error.message || 'An error occurred during GitHub sign in'
+      })
+      setLoading(false)
+    }
+  }
+
   const clearEmail = () => setEmail('')
   const clearPassword = () => setPassword('')
 
@@ -143,6 +169,26 @@ export function AuthForm() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Loading...' : 'Sign In'}
             </Button>
+            
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handleGitHubSignIn}
+              disabled={loading}
+            >
+              <Github size={16} />
+              GitHub
+            </Button>
           </form>
         </TabsContent>
         
@@ -175,6 +221,26 @@ export function AuthForm() {
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Loading...' : 'Sign Up'}
+            </Button>
+            
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handleGitHubSignIn}
+              disabled={loading}
+            >
+              <Github size={16} />
+              GitHub
             </Button>
           </form>
         </TabsContent>

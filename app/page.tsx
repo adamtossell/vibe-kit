@@ -866,7 +866,7 @@ export default function StarterKitsDirectory() {
             <TabsContent value="all">
               {sortedKits.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10 mb-8">
                     {paginatedKits.map((kit) => (
                       <StarterKitCard
                         key={kit.id}
@@ -938,7 +938,7 @@ export default function StarterKitsDirectory() {
             </TabsContent>
 
             <TabsContent value="featured">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                 {featuredKits.map((kit) => (
                   <StarterKitCard
                     key={kit.id}
@@ -952,7 +952,7 @@ export default function StarterKitsDirectory() {
 
             {favorites.length > 0 && (
               <TabsContent value="favorites">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                   {starterKits
                     .filter((kit) => favorites.includes(kit.id))
                     .map((kit) => (

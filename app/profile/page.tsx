@@ -70,14 +70,14 @@ export default function ProfilePage() {
                 <div className="flex space-x-4 w-full">
                   <Button 
                     asChild
+                    variant="outline"
                     className="flex-1"
                   >
                     <Link href="/login">Log in</Link>
                   </Button>
                   <Button 
                     asChild
-                    variant="outline"
-                    className="flex-1 border-slate-200 hover:border-slate-300"
+                    className="flex-1"
                   >
                     <Link href="/signup">Sign up</Link>
                   </Button>
