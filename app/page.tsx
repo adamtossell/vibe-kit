@@ -441,6 +441,10 @@ function getTagIcon(tag: string) {
       return <Palette className="w-3 h-3 mr-1" />
     case "mobile":
     case "expo":
+    case "android":
+    case "kotlin":
+    case "compose":
+    case "mvvm":
       return <Smartphone className="w-3 h-3 mr-1" />
     case "vscode":
     case "extension":
@@ -484,7 +488,7 @@ function getTagIcon(tag: string) {
   }
 }
 
-// Add this new function after getTagIcon
+// Function to get the color for a tag
 function getTagColor(tag: string) {
   switch (tag.toLowerCase()) {
     // Frontend/Web Technologies (Sky-600)
@@ -499,10 +503,12 @@ function getTagColor(tag: string) {
     // Languages/File Types (Indigo-600)
     case "typescript":
     case "javascript":
+    case "kotlin":
       return "oklch(0.591 0.191 264.043)"
     
     // Styling (Fuchsia-600)
     case "tailwind":
+    case "compose":
       return "oklch(0.585 0.248 332.394)"
     
     // Mobile Development (Teal-600)
@@ -511,6 +517,8 @@ function getTagColor(tag: string) {
     case "flutter":
     case "dart":
     case "cross-platform":
+    case "android":
+    case "mvvm":
       return "oklch(0.576 0.121 196.844)"
 
     // Backend/Server (Emerald-600)
@@ -634,7 +642,7 @@ export default function StarterKitsDirectory() {
                 onValueChange={() => {}}
               >
                 <SelectTrigger 
-                  className="w-full sm:w-[160px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
+                  className="w-full sm:w-[192px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
                 >
                   <SelectValue placeholder="Select category" className="text-slate-500 data-[state=placeholder]:text-slate-500">
                     {selectedCategories.length > 0 ? `${selectedCategories.length} selected` : "Select category"}
@@ -753,7 +761,7 @@ export default function StarterKitsDirectory() {
                     <SelectSeparator className="my-2" />
                     <SelectGroup>
                       <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-slate-700">Mobile Development</SelectLabel>
-                      {["mobile", "flutter", "react-native"].map(category => (
+                      {["mobile", "flutter", "react-native", "kotlin", "android", "mvvm", "compose"].map(category => (
                         <div 
                           key={category} 
                           className="relative flex items-center px-2 py-1.5 cursor-pointer hover:bg-slate-100 rounded-md"
@@ -917,7 +925,7 @@ export default function StarterKitsDirectory() {
 
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger 
-                  className="w-full sm:w-[160px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
+                  className="w-full sm:w-[192px] border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-slate-800"
                 >
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
