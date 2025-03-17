@@ -25,23 +25,7 @@ import {
   Braces,
   Workflow,
 } from "lucide-react";
-
-// Interface for the kit data
-interface Kit {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  tags: string[];
-  stars: number;
-  forks: number;
-  lastUpdated: string;
-  updatedAt: Date;
-  author: string;
-  repoUrl: string;
-  demoUrl: string | null;
-  featured: boolean;
-}
+import { Kit } from "@/types/kit";
 
 // Props for the StarterKitCard component
 interface StarterKitCardProps {
@@ -51,7 +35,7 @@ interface StarterKitCardProps {
 }
 
 // Function to get the appropriate icon for a tag
-function getTagIcon(tag: string) {
+export function getTagIcon(tag: string) {
   switch (tag.toLowerCase()) {
     case "next.js":
       return <Code2 className="w-3 h-3 mr-1" />;
@@ -110,7 +94,7 @@ function getTagIcon(tag: string) {
 }
 
 // Function to get the color for a tag
-function getTagColor(tag: string) {
+export function getTagColor(tag: string) {
   switch (tag.toLowerCase()) {
     // Frontend/Web Technologies (Sky-600)
     case "next.js":

@@ -1,7 +1,6 @@
 "use client"
 
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -37,31 +36,10 @@ import {
   X,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { Kit } from "@/types/kit"
+import { useGitHubStats } from "@/hooks/useGitHubStats"
+import { StarterKitCard } from "@/components/starter-kit-card"
 
-// Add these interfaces at the top of the file, after the imports
-interface Kit {
-  id: number
-  name: string
-  description: string
-  category: string
-  tags: string[]
-  stars: number
-  forks: number
-  lastUpdated: string
-  updatedAt: Date
-  author: string
-  repoUrl: string
-  demoUrl: string | null
-  featured: boolean
-}
-
-interface StarterKitCardProps {
-  kit: Kit
-  isFavorite: boolean
-  onToggleFavorite: (id: number) => void
-}
-
-// Sample data for starter kits
 const starterKits = [
   {
     id: 1,
@@ -215,217 +193,81 @@ const starterKits = [
   },
   {
     id: 11,
-    name: "React Dashboard Starter",
-    description: "A React dashboard starter kit with charts, tables, and authentication pre-configured.",
+    name: "Create React App",
+    description: "Set up a modern web app by running one command. Includes React, JSX, ES6, TypeScript and Flow syntax support.",
     category: "web",
-    tags: ["react", "dashboard", "typescript", "charts"],
-    stars: 2345,
-    forks: 432,
-    lastUpdated: "5 days ago",
-    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-    author: "reactjs",
-    repoUrl: "https://github.com/reactjs/reactjs.org",
-    demoUrl: "https://reactjs.org",
+    tags: ["react", "javascript", "typescript", "frontend"],
+    stars: 98500,
+    forks: 25600,
+    lastUpdated: "1 month ago",
+    updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    author: "facebook",
+    repoUrl: "https://github.com/facebook/create-react-app",
+    demoUrl: "https://create-react-app.dev",
     featured: true,
   },
   {
     id: 12,
-    name: "Go API Starter",
-    description: "A Go API starter kit with authentication, database, and Docker configuration.",
-    category: "backend",
-    tags: ["go", "api", "docker", "postgresql"],
-    stars: 1234,
-    forks: 198,
+    name: "React Admin",
+    description: "A frontend framework for building B2B applications running in the browser, on top of REST/GraphQL APIs.",
+    category: "web",
+    tags: ["react", "admin", "dashboard", "material-ui"],
+    stars: 21000,
+    forks: 4200,
     lastUpdated: "2 weeks ago",
-    updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 2 weeks ago
-    author: "golang",
-    repoUrl: "https://github.com/golang/go",
-    demoUrl: null,
+    updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+    author: "marmelab",
+    repoUrl: "https://github.com/marmelab/react-admin",
+    demoUrl: "https://marmelab.com/react-admin/",
     featured: false,
   },
   {
     id: 13,
-    name: "Next.js E-commerce Starter",
-    description: "A full-featured e-commerce starter kit built with Next.js, Stripe, and Tailwind CSS.",
+    name: "Chakra UI",
+    description: "Simple, modular and accessible UI components for React applications.",
     category: "web",
-    tags: ["next.js", "e-commerce", "stripe", "tailwind"],
-    stars: 1890,
-    forks: 312,
+    tags: ["react", "ui-library", "accessibility", "design-system"],
+    stars: 32000,
+    forks: 2900,
     lastUpdated: "1 week ago",
     updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    author: "vercel",
-    repoUrl: "https://github.com/vercel/nextjs-commerce",
-    demoUrl: "https://commerce.vercel.app",
+    author: "chakra-ui",
+    repoUrl: "https://github.com/chakra-ui/chakra-ui",
+    demoUrl: "https://chakra-ui.com",
     featured: true,
   },
   {
     id: 14,
-    name: "React Native E-commerce App",
-    description: "A complete e-commerce mobile app starter with React Native, Redux, and Firebase.",
-    category: "mobile",
-    tags: ["react-native", "e-commerce", "firebase", "redux"],
-    stars: 1678,
-    forks: 289,
-    lastUpdated: "2 weeks ago",
-    updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-    author: "react-native-community",
-    repoUrl: "https://github.com/react-native-community/react-native-ecommerce",
-    demoUrl: null,
-    featured: false,
+    name: "Tailwind CSS",
+    description: "A utility-first CSS framework for rapidly building custom user interfaces.",
+    category: "web",
+    tags: ["css", "design", "frontend", "utility"],
+    stars: 68000,
+    forks: 3400,
+    lastUpdated: "3 days ago",
+    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    author: "tailwindlabs",
+    repoUrl: "https://github.com/tailwindlabs/tailwindcss",
+    demoUrl: "https://tailwindcss.com",
+    featured: true,
   },
   {
     id: 15,
-    name: "Python FastAPI Starter",
-    description: "A modern FastAPI starter kit with SQLAlchemy, Pydantic, and JWT authentication.",
+    name: "Fastify",
+    description: "Fast and low overhead web framework for Node.js",
     category: "backend",
-    tags: ["python", "fastapi", "sqlalchemy", "jwt"],
-    stars: 1456,
-    forks: 234,
-    lastUpdated: "3 days ago",
-    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    author: "tiangolo",
-    repoUrl: "https://github.com/tiangolo/fastapi",
-    demoUrl: "https://fastapi.tiangolo.com",
-    featured: true,
-  },
-  {
-    id: 16,
-    name: "Vue 3 Admin Dashboard",
-    description: "A Vue 3 admin dashboard starter with Vite, Pinia, and Tailwind CSS.",
-    category: "web",
-    tags: ["vue.js", "admin", "pinia", "tailwind"],
-    stars: 1789,
-    forks: 345,
+    tags: ["node.js", "web-framework", "performance", "javascript"],
+    stars: 26000,
+    forks: 2100,
     lastUpdated: "5 days ago",
     updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    author: "vuejs",
-    repoUrl: "https://github.com/vuejs/vue-admin",
-    demoUrl: null,
+    author: "fastify",
+    repoUrl: "https://github.com/fastify/fastify",
+    demoUrl: "https://www.fastify.io",
     featured: false,
-  },
-  {
-    id: 17,
-    name: "Rust API Starter",
-    description: "A high-performance Rust API starter with Actix-web, SQLx, and JWT.",
-    category: "backend",
-    tags: ["rust", "api", "sqlx", "jwt"],
-    stars: 1234,
-    forks: 198,
-    lastUpdated: "1 month ago",
-    updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    author: "actix",
-    repoUrl: "https://github.com/actix/actix-web",
-    demoUrl: null,
-    featured: false,
-  },
-  {
-    id: 18,
-    name: "Next.js Blog Starter",
-    description: "A modern blog starter kit with Next.js, MDX, and Tailwind CSS.",
-    category: "web",
-    tags: ["next.js", "blog", "mdx", "tailwind"],
-    stars: 1567,
-    forks: 267,
-    lastUpdated: "2 weeks ago",
-    updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-    author: "vercel",
-    repoUrl: "https://github.com/vercel/nextjs-blog",
-    demoUrl: "https://blog.vercel.app",
-    featured: true,
-  },
-  {
-    id: 19,
-    name: "Kotlin Android Starter",
-    description: "A Kotlin Android starter kit with MVVM, Room, and Jetpack Compose.",
-    category: "mobile",
-    tags: ["kotlin", "android", "mvvm", "compose"],
-    stars: 1890,
-    forks: 312,
-    lastUpdated: "1 week ago",
-    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    author: "android",
-    repoUrl: "https://github.com/android/kotlin-starter",
-    demoUrl: null,
-    featured: false,
-  },
-  {
-    id: 20,
-    name: "Deno API Starter",
-    description: "A Deno API starter kit with Oak, PostgreSQL, and JWT authentication.",
-    category: "backend",
-    tags: ["deno", "api", "postgresql", "jwt"],
-    stars: 1456,
-    forks: 234,
-    lastUpdated: "3 days ago",
-    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    author: "denoland",
-    repoUrl: "https://github.com/denoland/deno",
-    demoUrl: "https://deno.land",
-    featured: true,
-  },
-  {
-    id: 21,
-    name: "SvelteKit E-commerce",
-    description: "A SvelteKit e-commerce starter with Stripe integration and Tailwind CSS.",
-    category: "web",
-    tags: ["svelte", "e-commerce", "stripe", "tailwind"],
-    stars: 1678,
-    forks: 289,
-    lastUpdated: "2 weeks ago",
-    updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-    author: "sveltejs",
-    repoUrl: "https://github.com/sveltejs/kit-commerce",
-    demoUrl: null,
-    featured: false,
-  },
-  {
-    id: 22,
-    name: "Flutter Social App",
-    description: "A Flutter social media app starter with Firebase and GetX state management.",
-    category: "mobile",
-    tags: ["flutter", "social", "firebase", "getx"],
-    stars: 1789,
-    forks: 345,
-    lastUpdated: "5 days ago",
-    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    author: "flutter",
-    repoUrl: "https://github.com/flutter/social-app",
-    demoUrl: null,
-    featured: false,
-  },
-  {
-    id: 23,
-    name: "Next.js SaaS Starter",
-    description: "A SaaS starter kit with Next.js, Stripe, and Prisma.",
-    category: "web",
-    tags: ["next.js", "saas", "stripe", "prisma"],
-    stars: 1890,
-    forks: 312,
-    lastUpdated: "1 week ago",
-    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    author: "vercel",
-    repoUrl: "https://github.com/vercel/nextjs-saas",
-    demoUrl: "https://saas.vercel.app",
-    featured: true,
-  },
-  {
-    id: 24,
-    name: "Python Django REST API",
-    description: "A Django REST API starter with DRF, Celery, and Redis.",
-    category: "backend",
-    tags: ["python", "django", "drf", "celery"],
-    stars: 1456,
-    forks: 234,
-    lastUpdated: "3 days ago",
-    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    author: "django",
-    repoUrl: "https://github.com/django/django-rest-api",
-    demoUrl: null,
-    featured: false,
-  },
+  }
 ]
 
-// Function to get the appropriate icon for a tag
 function getTagIcon(tag: string) {
   switch (tag.toLowerCase()) {
     case "next.js":
@@ -488,7 +330,6 @@ function getTagIcon(tag: string) {
   }
 }
 
-// Function to get the color for a tag
 function getTagColor(tag: string) {
   switch (tag.toLowerCase()) {
     // Frontend/Web Technologies (Sky-600)
@@ -560,6 +401,10 @@ export default function StarterKitsDirectory() {
   const [currentPage, setCurrentPage] = useState(1)
   const [favorites, setFavorites] = useState<number[]>([])
   const itemsPerPage = 18
+  
+  // Use the GitHub stats hook to get real-time star and fork counts
+  const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN || "";
+  const { kits, loading } = useGitHubStats(starterKits, githubToken);
 
   // Toggle favorite status of a kit
   const toggleFavorite = (id: number) => {
@@ -567,16 +412,14 @@ export default function StarterKitsDirectory() {
   }
 
   // Filter starter kits based on search query and selected categories
-  const filteredKits = starterKits.filter((kit) => {
+  const filteredKits = kits.filter((kit) => {
     const matchesSearch =
       kit.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       kit.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       kit.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-
-    const matchesCategory = 
-      selectedCategories.length === 0 || 
-      kit.tags.some(tag => selectedCategories.includes(tag.toLowerCase()))
-
+    
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(kit.category)
+    
     return matchesSearch && matchesCategory
   })
 
@@ -584,32 +427,27 @@ export default function StarterKitsDirectory() {
   const sortedKits = [...filteredKits].sort((a, b) => {
     switch (sortBy) {
       case "popular":
-        return b.stars * 1.5 + b.forks - (a.stars * 1.5 + a.forks)
-      case "forks":
-        return b.forks - a.forks
+        return b.stars - a.stars
       case "recent":
-        return b.updatedAt.getTime() - a.updatedAt.getTime()
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       case "name":
         return a.name.localeCompare(b.name)
-      case "name-desc":
-        return b.name.localeCompare(a.name)
+      case "forks":
+        return b.forks - a.forks
       default:
-        return b.stars * 1.5 + b.forks - (a.stars * 1.5 + a.forks)
+        return 0
     }
   })
 
   // Get featured kits
-  const featuredKits = starterKits.filter((kit) => kit.featured)
+  const featuredKits = kits.filter((kit) => kit.featured)
 
-  // Pagination logic
   const totalPages = Math.ceil(sortedKits.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedKits = sortedKits.slice(startIndex, startIndex + itemsPerPage)
 
-  // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
-    // Scroll to top of results
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -964,7 +802,6 @@ export default function StarterKitsDirectory() {
             </div>
           </div>
 
-          {/* Add the active filters row here */}
           {selectedCategories.length > 0 && (
             <div className="mt-4">
               {selectedCategories.map((category) => {
@@ -1039,7 +876,6 @@ export default function StarterKitsDirectory() {
                     ))}
                   </div>
 
-                  {/* Pagination */}
                   {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 mt-8">
                       <Button
@@ -1128,98 +964,5 @@ export default function StarterKitsDirectory() {
         </div>
       </main>
     </div>
-  )
-}
-
-function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardProps) {
-  return (
-    <Card className="h-full flex flex-col border-slate-200">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl">{kit.name}</CardTitle>
-          <div className="flex items-center gap-2">
-            {kit.featured && (
-              <Badge variant="secondary" style={{ 
-                backgroundColor: "oklch(0.97 0.02 271.6)",
-                color: "oklch(0.511 0.262 276.966)",
-                border: "1px solid oklch(0.95 0.02 271.6)"
-              }}>
-                Featured
-              </Badge>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-background/80"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onToggleFavorite(kit.id)
-              }}
-            >
-              <Heart className={`h-5 w-5 ${isFavorite ? "fill-[oklch(0.586_0.253_17.585)] text-[oklch(0.586_0.253_17.585)]" : "text-muted-foreground"}`} />
-              <span className="sr-only">{isFavorite ? "Remove from favorites" : "Add to favorites"}</span>
-            </Button>
-          </div>
-        </div>
-        <CardDescription className="line-clamp-2">{kit.description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-grow">
-        <div className="flex flex-wrap gap-2 mb-4">
-          {kit.tags.map((tag) => {
-            const tagColor = getTagColor(tag);
-            return (
-              <Badge 
-                key={tag} 
-                variant="outline" 
-                className="text-xs flex items-center border-slate-200" 
-                style={{ 
-                  color: tagColor,
-                }}
-              >
-                <span style={{ color: tagColor }}>
-                  {getTagIcon(tag)}
-                </span>
-                {tag}
-              </Badge>
-            );
-          })}
-        </div>
-        <div className="flex items-center text-sm text-muted-foreground gap-4 mb-2">
-          <div className="flex items-center">
-            <Star className="w-4 h-4 mr-1" />
-            {kit.stars.toLocaleString()}
-          </div>
-          <div className="flex items-center">
-            <GitFork className="w-4 h-4 mr-1" />
-            {kit.forks.toLocaleString()}
-          </div>
-        </div>
-        <div className="text-sm text-muted-foreground">
-          by <Link href={`https://github.com/${kit.author}`} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
-            {kit.author}
-          </Link>
-        </div>
-      </CardContent>
-      <CardFooter className="flex gap-2">
-        <Button 
-          variant="secondary" 
-          className="flex-1 bg-slate-100 hover:bg-slate-200 border-slate-200"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Download
-        </Button>
-        <Button 
-          asChild 
-          variant="dark"
-          className="flex-1"
-        >
-          <Link href={kit.repoUrl} target="_blank" rel="noopener noreferrer">
-            <Github className="w-4 h-4 mr-2" />
-            View Repo
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
   )
 }
