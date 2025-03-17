@@ -27,7 +27,7 @@ export function UserAvatar() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full">
+        <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
           <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-100">
             <User className="h-4 w-4 text-slate-600" />
           </div>
@@ -43,14 +43,14 @@ export function UserAvatar() {
           </div>
         </div>
         <DropdownMenuSeparator className="bg-slate-200" />
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="text-slate-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-800 focus:bg-slate-100 focus:text-slate-800 py-1.5 px-2">
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="text-slate-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-800 focus:bg-slate-100 focus:text-slate-800 py-1.5 px-2">
           <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-slate-200" />
-        <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuItem onClick={handleSignOut} className="text-slate-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-800 focus:bg-slate-100 focus:text-slate-800 py-1.5 px-2">
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

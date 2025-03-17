@@ -123,13 +123,13 @@ export default function SettingsPage() {
           )}
           
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100">
+              <TabsTrigger value="profile" className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600">Profile</TabsTrigger>
+              <TabsTrigger value="security" className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600">Security</TabsTrigger>
             </TabsList>
             
             <TabsContent value="profile">
-              <Card>
+              <Card className="border border-slate-200">
                 <CardHeader>
                   <CardTitle>Profile Information</CardTitle>
                   <CardDescription>
@@ -146,7 +146,7 @@ export default function SettingsPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         disabled
-                        className="border-slate-200"
+                        className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       />
                       <p className="text-xs text-slate-500">Email cannot be changed</p>
                     </div>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
             </TabsContent>
             
             <TabsContent value="security">
-              <Card>
+              <Card className="border border-slate-200">
                 <CardHeader>
                   <CardTitle>Security Settings</CardTitle>
                   <CardDescription>
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="border-slate-200"
+                        className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       />
                     </div>
                     <div className="space-y-2">
@@ -187,7 +187,7 @@ export default function SettingsPage() {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="border-slate-200"
+                        className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       />
                       <p className="text-xs text-slate-500">Password must be at least 6 characters long</p>
                     </div>
