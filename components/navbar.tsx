@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Github, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
+import { useAuth } from "@/hooks/use-auth"
+import { UserAvatar } from "@/components/user-avatar"
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const { user } = useAuth()
 
   return (
     <nav className="w-full bg-background">
@@ -21,18 +24,22 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
-              <Link href="/login">Log in</Link>
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              asChild
-            >
-              <Link href="/signup">Sign up</Link>
-            </Button>
-          </div>
+          {user ? (
+            <UserAvatar />
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
+                <Link href="/login">Log in</Link>
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                asChild
+              >
+                <Link href="/signup">Sign up</Link>
+              </Button>
+            </div>
+          )}
         </nav>
 
         {/* Mobile navigation */}
@@ -50,18 +57,24 @@ export function Navbar() {
                 <span className="font-bold text-xl">VibeKit</span>
               </Link>
               <nav className="flex flex-col gap-4">{/* Navigation links removed */}</nav>
-              <div className="flex flex-col gap-2 mt-4">
-                <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
-                  <Link href="/login">Log in</Link>
-                </Button>
-                <Button
-                  variant="default"
-                  asChild
-                  onClick={() => setOpen(false)}
-                >
-                  <Link href="/signup">Sign up</Link>
-                </Button>
-              </div>
+              {user ? (
+                <div className="mt-4">
+                  <UserAvatar />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 mt-4">
+                  <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
+                    <Link href="/login">Log in</Link>
+                  </Button>
+                  <Button
+                    variant="default"
+                    asChild
+                    onClick={() => setOpen(false)}
+                  >
+                    <Link href="/signup">Sign up</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </SheetContent>
         </Sheet>
@@ -69,4 +82,3 @@ export function Navbar() {
     </nav>
   )
 }
-

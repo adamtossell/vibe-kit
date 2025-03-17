@@ -73,6 +73,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
@@ -86,17 +87,6 @@ export default function ForgotPasswordPage() {
               <Link href="/login" className="text-primary hover:underline">
                 Log in
               </Link>
-            </div>
-            <div className="text-center text-xs text-muted-foreground">
-              By requesting a password reset, you agree to our{" "}
-              <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
-                Privacy Policy
-              </Link>
-              .
             </div>
           </CardFooter>
         </Card>
