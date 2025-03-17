@@ -157,22 +157,29 @@ export function getTagColor(tag: string) {
 
 export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardProps) {
   return (
-    <Card className="overflow-hidden border border-slate-200 hover:border-slate-300 transition-all">
+    <Card className="overflow-hidden border border-slate-200">
       <CardHeader className="p-4 pb-0">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg font-semibold text-slate-900">{kit.name}</CardTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full"
-            onClick={() => onToggleFavorite(kit.id)}
-          >
-            <Heart
-              className={`h-4 w-4 ${
-                isFavorite ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-slate-900"
-              }`}
-            />
-          </Button>
+          <div className="flex items-center gap-2">
+            {kit.featured && (
+              <Badge className="bg-indigo-50 text-indigo-500 hover:bg-indigo-50 border border-indigo-100 shadow-none text-xs py-0.5">
+                Featured
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={() => onToggleFavorite(kit.id)}
+            >
+              <Heart
+                className={`h-4 w-4 ${
+                  isFavorite ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-slate-900"
+                }`}
+              />
+            </Button>
+          </div>
         </div>
         <CardDescription className="text-slate-500 mt-1 line-clamp-2">{kit.description}</CardDescription>
       </CardHeader>
@@ -182,7 +189,7 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
             <Badge
               key={tag}
               variant="outline"
-              className="text-xs py-0 px-2 flex items-center border-slate-200"
+              className="text-xs py-0.5 px-2 flex items-center border-slate-200"
               style={{
                 color: getTagColor(tag),
               }}
@@ -194,7 +201,7 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
           {kit.tags.length > 4 && (
             <Badge
               variant="outline"
-              className="text-xs py-0 px-2 flex items-center border-slate-200 text-slate-500"
+              className="text-xs py-0.5 px-2 flex items-center border-slate-200 text-slate-500"
             >
               +{kit.tags.length - 4} more
             </Badge>
@@ -214,7 +221,7 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
               href={`https://github.com/${kit.author}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-primary hover:underline"
+              className="font-medium text-slate-700 hover:text-indigo-500 hover:underline"
             >
               {kit.author}
             </a>
@@ -229,24 +236,22 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
             className="flex-1 h-8 text-xs border-slate-200 hover:border-slate-300 text-slate-600"
             asChild
           >
+            <a href={kit.downloadUrl || kit.repoUrl} target="_blank" rel="noopener noreferrer">
+              <Download className="h-3.5 w-3.5 mr-1" />
+              Download
+            </a>
+          </Button>
+          <Button
+            variant="dark"
+            size="sm"
+            className="flex-1 h-8 text-xs"
+            asChild
+          >
             <a href={kit.repoUrl} target="_blank" rel="noopener noreferrer">
               <Github className="h-3.5 w-3.5 mr-1" />
               Repository
             </a>
           </Button>
-          {kit.demoUrl && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 h-8 text-xs border-slate-200 hover:border-slate-300 text-slate-600"
-              asChild
-            >
-              <a href={kit.demoUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                Demo
-              </a>
-            </Button>
-          )}
         </div>
       </CardFooter>
     </Card>
