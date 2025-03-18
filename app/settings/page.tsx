@@ -60,24 +60,6 @@ export default function SettingsPage() {
   const hasGithubAuth = user.app_metadata?.provider === 'github'
   const hasEmailAuth = user.app_metadata?.provider === 'email' || !user.app_metadata?.provider
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setMessage('')
-    setIsUpdating(true)
-
-    try {
-      // This is a placeholder for actual profile update logic
-      // In a real app, you would call the Supabase API to update the user's profile
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setMessage('Profile updated successfully!')
-    } catch (err: any) {
-      setError(err.message || 'Failed to update profile')
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -139,53 +121,62 @@ export default function SettingsPage() {
                 <CardHeader>
                   <CardTitle>Profile Information</CardTitle>
                   <CardDescription>
-                    Update your account profile information
+                    View your account profile information
                   </CardDescription>
                 </CardHeader>
-                <form onSubmit={handleUpdateProfile}>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled
-                        className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                      />
-                      <p className="text-xs text-slate-500">Email cannot be changed</p>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-md">
+                    <p className="text-green-600 font-medium mb-2">✅ You are signed in!</p>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Email:</strong> {user.email}</p>
+                      <p><strong>User ID:</strong> {user.id}</p>
+                      <p><strong>Last Sign In:</strong> {new Date(user.last_sign_in_at || '').toLocaleString()}</p>
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>Authentication Methods</Label>
-                      <div className="flex flex-col gap-2 mt-2">
-                        {hasEmailAuth && (
-                          <div className="flex items-center gap-2 p-2 border rounded-md">
-                            <Badge variant="outline" className="bg-slate-100">Email</Badge>
-                            <span className="text-sm">Signed in with email and password</span>
-                          </div>
-                        )}
-                        
-                        {hasGithubAuth && (
-                          <div className="flex items-center gap-2 p-2 border rounded-md">
-                            <Badge variant="outline" className="bg-slate-100 flex items-center gap-1">
-                              <Github size={14} />
-                              <span>GitHub</span>
-                            </Badge>
-                            <span className="text-sm">Connected with GitHub account</span>
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-500">These are the methods you can use to sign in to your account</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      disabled
+                      className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    />
+                    <p className="text-xs text-slate-500">Email cannot be changed</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Authentication Methods</Label>
+                    <div className="flex flex-col gap-2 mt-2">
+                      {hasEmailAuth && (
+                        <div className="flex items-center gap-2 p-2 border rounded-md">
+                          <Badge variant="outline" className="bg-slate-100">Email</Badge>
+                          <span className="text-sm">Signed in with email and password</span>
+                        </div>
+                      )}
+                      
+                      {hasGithubAuth && (
+                        <div className="flex items-center gap-2 p-2 border rounded-md">
+                          <Badge variant="outline" className="bg-slate-100 flex items-center gap-1">
+                            <Github size={14} />
+                            <span>GitHub</span>
+                          </Badge>
+                          <span className="text-sm">Connected with GitHub account</span>
+                        </div>
+                      )}
                     </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button type="submit" disabled={isUpdating}>
-                      {isUpdating ? 'Updating...' : 'Update Profile'}
-                    </Button>
-                  </CardFooter>
-                </form>
+                    <p className="text-xs text-slate-500">These are the methods you can use to sign in to your account</p>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    onClick={signOut}
+                    variant="destructive"
+                  >
+                    Sign Out
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
             
@@ -197,43 +188,58 @@ export default function SettingsPage() {
                     Update your password and security preferences
                   </CardDescription>
                 </CardHeader>
-                <form onSubmit={handleUpdatePassword}>
+                {hasEmailAuth ? (
+                  <form onSubmit={handleUpdatePassword}>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">New Password</Label>
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirm Password</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        />
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit" disabled={isUpdating}>
+                        {isUpdating ? 'Updating...' : 'Update Password'}
+                      </Button>
+                    </CardFooter>
+                  </form>
+                ) : (
                   <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="new-password">New Password</Label>
-                      <Input
-                        id="new-password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm New Password</Label>
-                      <Input
-                        id="confirm-password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                      />
-                      <p className="text-xs text-slate-500">Password must be at least 6 characters long</p>
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                      <div className="flex items-center gap-2">
+                        <Github size={18} className="text-blue-600" />
+                        <p className="text-blue-600 font-medium">GitHub Authentication</p>
+                      </div>
+                      <p className="mt-2 text-sm text-blue-600">
+                        Your account uses GitHub for authentication. Password management is handled through GitHub and cannot be changed here.
+                      </p>
+                      <Button 
+                        asChild
+                        variant="outline" 
+                        className="mt-4 text-sm bg-white"
+                      >
+                        <a href="https://github.com/settings/security" target="_blank" rel="noopener noreferrer">
+                          Manage GitHub Security Settings
+                        </a>
+                      </Button>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button type="submit" disabled={isUpdating}>
-                      {isUpdating ? 'Updating...' : 'Update Password'}
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="destructive" 
-                      onClick={signOut}
-                    >
-                      Sign Out
-                    </Button>
-                  </CardFooter>
-                </form>
+                )}
               </Card>
             </TabsContent>
           </Tabs>

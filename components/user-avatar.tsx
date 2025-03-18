@@ -44,10 +44,7 @@ export function UserAvatar() {
         </div>
         <DropdownMenuSeparator className="bg-slate-200" />
         <DropdownMenuItem asChild className="text-slate-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-800 focus:bg-slate-100 focus:text-slate-800 py-1.5 px-2 cursor-pointer">
-          <Link href="/profile">Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="text-slate-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-800 focus:bg-slate-100 focus:text-slate-800 py-1.5 px-2 cursor-pointer">
-          <Link href="/settings">Settings</Link>
+          <Link href="/settings">Account</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-slate-200" />
         <DropdownMenuItem onClick={handleSignOut} className="text-slate-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-800 focus:bg-slate-100 focus:text-slate-800 py-1.5 px-2 cursor-pointer">
