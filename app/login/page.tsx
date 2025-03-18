@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Github } from "lucide-react"
@@ -13,14 +13,31 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Navbar } from "@/components/navbar"
 import { supabase } from "@/lib/supabase"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
+  const [isGithubSignIn, setIsGithubSignIn] = useState(false)
+  const [isGithubUser, setIsGithubUser] = useState(false)
+
+  // Check if the user signed up with GitHub
+  useEffect(() => {
+    if (user) {
+      // Check if the user has GitHub as a provider
+      const identities = user.identities || [];
+      const isGithub = identities.some(identity => identity.provider === 'github');
+      setIsGithubUser(isGithub);
+      
+      // If user is already authenticated, redirect to profile
+      router.push("/profile");
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,6 +75,7 @@ export default function LoginPage() {
   const handleGithubSignIn = async () => {
     try {
       setIsLoading(true)
+      setIsGithubSignIn(true)
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
@@ -69,6 +87,7 @@ export default function LoginPage() {
       console.error('GitHub sign in error:', err)
       setError(err.message || "An error occurred with GitHub sign in")
       setIsLoading(false)
+      setIsGithubSignIn(false)
     }
   }
 
@@ -104,9 +123,11 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                    Forgot password?
-                  </Link>
+                  {!isGithubSignIn && !isGithubUser && (
+                    <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                      Forgot password?
+                    </Link>
+                  )}
                 </div>
                 <Input
                   id="password"
