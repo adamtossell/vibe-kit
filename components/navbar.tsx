@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Github, Menu } from "lucide-react"
+import { Github, Menu, ShieldCheck } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { useAuth } from "@/hooks/use-auth"
@@ -11,7 +11,7 @@ import { SubmitRepositoryModal } from "@/components/submit-repository-modal"
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
 
   return (
     <nav className="w-full bg-background">
@@ -28,6 +28,14 @@ export function Navbar() {
           {user ? (
             <>
               <SubmitRepositoryModal />
+              {isAdmin && (
+                <Button variant="ghost" size="sm" asChild className="flex items-center gap-1 text-slate-700 hover:text-slate-900">
+                  <Link href="/admin/submissions">
+                    <ShieldCheck className="h-4 w-4 mr-1" />
+                    Admin
+                  </Link>
+                </Button>
+              )}
               <UserAvatar />
             </>
           ) : (
@@ -64,6 +72,14 @@ export function Navbar() {
               {user ? (
                 <div className="mt-4">
                   <SubmitRepositoryModal />
+                  {isAdmin && (
+                    <Button variant="ghost" size="sm" asChild className="flex items-center gap-1 mt-4 text-slate-700 hover:text-slate-900">
+                      <Link href="/admin/submissions" onClick={() => setOpen(false)}>
+                        <ShieldCheck className="h-4 w-4 mr-1" />
+                        Admin
+                      </Link>
+                    </Button>
+                  )}
                   <div className="mt-4">
                     <UserAvatar />
                   </div>
