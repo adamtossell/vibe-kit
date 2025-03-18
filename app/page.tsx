@@ -418,7 +418,10 @@ export default function StarterKitsDirectory() {
       kit.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       kit.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(kit.category)
+    const matchesCategory = 
+      selectedCategories.length === 0 || 
+      selectedCategories.includes(kit.category) ||
+      kit.tags.some(tag => selectedCategories.includes(tag))
     
     return matchesSearch && matchesCategory
   })
