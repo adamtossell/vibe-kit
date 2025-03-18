@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { UserAvatar } from "@/components/user-avatar"
+import { SubmitRepositoryModal } from "@/components/submit-repository-modal"
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
@@ -25,7 +26,10 @@ export function Navbar() {
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-4">
           {user ? (
-            <UserAvatar />
+            <>
+              <SubmitRepositoryModal />
+              <UserAvatar />
+            </>
           ) : (
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" asChild className="border-slate-200 hover:border-slate-300 hover:bg-slate-50">
@@ -59,7 +63,10 @@ export function Navbar() {
               <nav className="flex flex-col gap-4">{/* Navigation links removed */}</nav>
               {user ? (
                 <div className="mt-4">
-                  <UserAvatar />
+                  <SubmitRepositoryModal />
+                  <div className="mt-4">
+                    <UserAvatar />
+                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2 mt-4">
