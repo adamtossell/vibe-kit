@@ -399,17 +399,11 @@ export default function StarterKitsDirectory() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [sortBy, setSortBy] = useState("popular")
   const [currentPage, setCurrentPage] = useState(1)
-  const [favorites, setFavorites] = useState<number[]>([])
   const itemsPerPage = 18
   
   // Use the GitHub stats hook to get real-time star and fork counts
   const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN || "";
   const { kits, loading } = useGitHubStats(starterKits, githubToken);
-
-  // Toggle favorite status of a kit
-  const toggleFavorite = (id: number) => {
-    setFavorites((prev) => (prev.includes(id) ? prev.filter((kitId) => kitId !== id) : [...prev, id]))
-  }
 
   // Filter starter kits based on search query and selected categories
   const filteredKits = kits.filter((kit) => {
@@ -856,26 +850,16 @@ export default function StarterKitsDirectory() {
               >
                 Featured
               </TabsTrigger>
-              {favorites.length > 0 && (
-                <TabsTrigger 
-                  value="favorites"
-                  className="data-[state=active]:text-slate-800 data-[state=inactive]:text-slate-600"
-                >
-                  Favorites ({favorites.length})
-                </TabsTrigger>
-              )}
             </TabsList>
 
             <TabsContent value="all">
               {sortedKits.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {paginatedKits.map((kit) => (
                       <StarterKitCard
                         key={kit.id}
                         kit={kit}
-                        isFavorite={favorites.includes(kit.id)}
-                        onToggleFavorite={toggleFavorite}
                       />
                     ))}
                   </div>
@@ -941,29 +925,15 @@ export default function StarterKitsDirectory() {
             </TabsContent>
 
             <TabsContent value="featured">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredKits.map((kit) => (
                   <StarterKitCard
                     key={kit.id}
                     kit={kit}
-                    isFavorite={favorites.includes(kit.id)}
-                    onToggleFavorite={toggleFavorite}
                   />
                 ))}
               </div>
             </TabsContent>
-
-            {favorites.length > 0 && (
-              <TabsContent value="favorites">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-                  {starterKits
-                    .filter((kit) => favorites.includes(kit.id))
-                    .map((kit) => (
-                      <StarterKitCard key={kit.id} kit={kit} isFavorite={true} onToggleFavorite={toggleFavorite} />
-                    ))}
-                </div>
-              </TabsContent>
-            )}
           </Tabs>
         </div>
       </main>

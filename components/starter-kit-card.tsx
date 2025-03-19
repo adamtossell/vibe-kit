@@ -30,8 +30,6 @@ import { Kit } from "@/types/kit";
 // Props for the StarterKitCard component
 interface StarterKitCardProps {
   kit: Kit;
-  isFavorite: boolean;
-  onToggleFavorite: (id: number) => void;
 }
 
 // Function to get the appropriate icon for a tag
@@ -181,35 +179,21 @@ function getDownloadUrl(kit: Kit): string {
   return repoUrl;
 }
 
-export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKitCardProps) {
+export function StarterKitCard({ kit }: StarterKitCardProps) {
   return (
-    <Card className="overflow-hidden border border-slate-200">
+    <Card className="overflow-hidden border border-slate-200 flex flex-col h-full">
       <CardHeader className="p-4 pb-0">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg font-semibold text-slate-900">{kit.name}</CardTitle>
-          <div className="flex items-center gap-2">
-            {kit.featured && (
-              <Badge className="bg-indigo-50 text-indigo-500 hover:bg-indigo-50 border border-indigo-100 shadow-none text-xs py-0.5">
-                Featured
-              </Badge>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full"
-              onClick={() => onToggleFavorite(kit.id)}
-            >
-              <Heart
-                className={`h-4 w-4 ${
-                  isFavorite ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-slate-900"
-                }`}
-              />
-            </Button>
-          </div>
+          {kit.featured && (
+            <Badge className="bg-indigo-50 text-indigo-500 hover:bg-indigo-50 border border-indigo-100 shadow-none text-xs py-0.5">
+              Featured
+            </Badge>
+          )}
         </div>
         <CardDescription className="text-slate-500 mt-1 line-clamp-2">{kit.description}</CardDescription>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-4 flex-grow">
         <div className="flex flex-wrap gap-1 mb-4">
           {kit.tags.slice(0, 4).map((tag) => (
             <Badge
@@ -254,7 +238,7 @@ export function StarterKitCard({ kit, isFavorite, onToggleFavorite }: StarterKit
           </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex flex-col space-y-2">
+      <CardFooter className="p-4 pt-0 mt-auto">
         <div className="flex space-x-2 w-full">
           <Button
             variant="outline"
