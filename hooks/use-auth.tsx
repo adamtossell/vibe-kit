@@ -2,7 +2,7 @@
 
 import { useEffect, useState, createContext, useContext } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { User, Session } from '@supabase/supabase-js'
 
 type AuthContextType = {
@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const router = useRouter()
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
     const getSession = async () => {
@@ -50,8 +51,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async (_event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
-        
-        // Check if user has admin role
+
+        // Update admin status when auth state changes
         if (session?.user) {
           const { data, error } = await supabase
             .from('profiles')
@@ -61,29 +62,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           if (!error && data) {
             setIsAdmin(!!data.is_admin)
-          } else {
-            setIsAdmin(false)
           }
         } else {
           setIsAdmin(false)
         }
-        
-        setLoading(false)
       }
     )
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [supabase, router])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
+    try {
+      await supabase.auth.signOut()
+      router.push('/login')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
+
+  const value = {
+    user,
+    session,
+    signOut,
+    loading,
+    isAdmin
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, signOut, loading, isAdmin }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

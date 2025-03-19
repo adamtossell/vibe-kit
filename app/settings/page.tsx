@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,8 +11,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from 'next/link'
 import { Github } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useRouter } from 'next/navigation'
 
 export default function SettingsPage() {
+  const router = useRouter()
   const { user, loading, signOut } = useAuth()
   const [email, setEmail] = useState(user?.email || '')
   const [password, setPassword] = useState('')
@@ -20,6 +22,12 @@ export default function SettingsPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login?returnUrl=/settings')
+    }
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -70,20 +78,34 @@ export default function SettingsPage() {
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long')
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return
+    }
+
+    if (!/(?=.*[A-Za-z])(?=.*\d)/.test(password)) {
+      setError('Password must contain both letters and numbers')
       return
     }
 
     setIsUpdating(true)
 
     try {
-      // This is a placeholder for actual password update logic
-      // In a real app, you would call the Supabase API to update the user's password
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setMessage('Password updated successfully!')
+      const { error: updateError } = await user.update({
+        password: password
+      })
+
+      if (updateError) {
+        throw updateError
+      }
+
+      setMessage('Password updated successfully! Please sign in again with your new password.')
       setPassword('')
       setConfirmPassword('')
+      
+      // Sign out the user after successful password change
+      await signOut()
+      router.push('/login')
     } catch (err: any) {
       setError(err.message || 'Failed to update password')
     } finally {
@@ -192,14 +214,14 @@ export default function SettingsPage() {
                   <form onSubmit={handleUpdatePassword}>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="new-password">New Password</Label>
+                        <Label htmlFor="password">New Password</Label>
                         <Input
-                          id="new-password"
+                          id="password"
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         />
+                        <p className="text-xs text-slate-500">Password must be at least 8 characters long and contain both letters and numbers</p>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -208,7 +230,6 @@ export default function SettingsPage() {
                           type="password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         />
                       </div>
                     </CardContent>

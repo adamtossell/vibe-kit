@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/use-auth"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -28,16 +28,20 @@ export default function LoginPage() {
 
   // Check if the user signed up with GitHub
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {  // Only redirect after loading is complete
       // Check if the user has GitHub as a provider
       const identities = user.identities || [];
       const isGithub = identities.some(identity => identity.provider === 'github');
       setIsGithubUser(isGithub);
       
-      // If user is already authenticated, redirect to profile
-      router.push("/profile");
+      // Get return URL from query params
+      const params = new URLSearchParams(window.location.search);
+      const returnUrl = params.get('returnUrl');
+      if (returnUrl) {
+        router.push(returnUrl);
+      }
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

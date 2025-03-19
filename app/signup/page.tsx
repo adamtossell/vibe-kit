@@ -37,8 +37,13 @@ export default function SignupPage() {
       return
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long")
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long")
+      return
+    }
+
+    if (!/(?=.*[A-Za-z])(?=.*\d)/.test(password)) {
+      setError("Password must contain both letters and numbers")
       return
     }
 
@@ -138,7 +143,7 @@ export default function SignupPage() {
                   required
                   className="border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 />
-                <p className="text-xs text-slate-500">Password must be at least 6 characters long</p>
+                <p className="text-xs text-slate-500">Password must be at least 8 characters long and contain both letters and numbers</p>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Sign up"}

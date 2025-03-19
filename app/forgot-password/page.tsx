@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Navbar } from "@/components/navbar"
-import { supabase } from "@/lib/supabase"
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
@@ -18,6 +18,7 @@ export default function ForgotPasswordPage() {
   const [success, setSuccess] = useState(false)
   const [isGithubUser, setIsGithubUser] = useState(false)
   const [lastSubmitTime, setLastSubmitTime] = useState(0)
+  const supabase = createClientComponentClient()
 
   // Function to check if a user is a GitHub user directly in the client
   const checkGithubUser = async (email: string): Promise<boolean> => {
@@ -26,11 +27,9 @@ export default function ForgotPasswordPage() {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password: 'dummy-password-that-will-fail'
-      });
+      })
       
       if (signInError) {
-        console.log('Sign-in error:', signInError.message);
-        
         // If we get "Invalid login credentials", it means the user exists with password
         // If we get a different error, they might be using OAuth
         if (!signInError.message.includes('Invalid login credentials')) {
@@ -38,110 +37,67 @@ export default function ForgotPasswordPage() {
           const { error: otpError } = await supabase.auth.signInWithOtp({
             email,
             options: { shouldCreateUser: false }
-          });
+          })
           
           if (otpError) {
-            console.log('OTP error:', otpError.message);
-            
             // If we get an error about email link being invalid or email already in use,
             // it suggests the user exists but can't use OTP (likely OAuth)
             if (otpError.message.includes('Email link is invalid') || 
                 otpError.message.includes('Email address already in use')) {
-              return true; // Likely a GitHub user
+              return true // Likely a GitHub user
             }
           }
         }
       }
       
-      return false; // Not a GitHub user or couldn't determine
-    } catch (error) {
-      console.error('Error checking GitHub user:', error);
-      return false; // Default to not a GitHub user on error
+      return false // Not a GitHub user
+    } catch (err) {
+      console.error('Error checking GitHub user:', err)
+      return false
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setSuccess(false)
-    setIsGithubUser(false)
-    console.log("Checking email:", email)
 
     if (!email) {
       setError("Please enter your email address")
       return
     }
 
-    // Check for rate limiting - prevent submissions within 60 seconds
+    // Rate limiting check
     const now = Date.now()
-    const timeSinceLastSubmit = now - lastSubmitTime
-    if (timeSinceLastSubmit < 60000) {
-      setError(`Please wait ${Math.ceil((60000 - timeSinceLastSubmit) / 1000)} seconds before trying again`)
+    if (now - lastSubmitTime < 60000) { // 1 minute cooldown
+      setError("Please wait a minute before trying again")
       return
     }
 
     setIsLoading(true)
 
     try {
-      // First check if the user is currently logged in with this email
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log("Current session:", session?.user?.email)
-      
-      if (session?.user?.email?.toLowerCase() === email.toLowerCase()) {
-        // User is trying to reset their own password while logged in
-        const identities = session.user.identities || [];
-        console.log("User identities:", identities)
-        
-        const isGithub = identities.some(identity => identity.provider === 'github');
-        
-        if (isGithub) {
-          console.log("Current user is a GitHub user")
-          setIsGithubUser(true);
-          setIsLoading(false);
-          return;
-        }
+      // Check if user signed up with GitHub
+      const isGithub = await checkGithubUser(email)
+      setIsGithubUser(isGithub)
+
+      if (isGithub) {
+        setError("This email is associated with GitHub login. Please sign in with GitHub instead.")
+        return
       }
-      
-      // If not logged in, check if this is a GitHub user using our client-side method
-      const isGithubUser = await checkGithubUser(email);
-      
-      if (isGithubUser) {
-        console.log("Detected GitHub user via client-side checks");
-        setIsGithubUser(true);
-        setIsLoading(false);
-        return;
-      }
-      
-      // Only proceed with password reset if we haven't identified a GitHub user
-      console.log("Sending password reset email");
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      
-      if (error) {
-        console.error("Reset password error:", error);
-        
-        // Check if the error suggests this is a rate limiting issue
-        if (error.message.includes("security purposes") || error.message.includes("seconds")) {
-          setError("Too many requests. Please try again later.");
-        } 
-        // Check if the error suggests this is a GitHub user
-        else if (error.message.includes("OAuth") || 
-                error.message.includes("third-party") || 
-                error.message.includes("provider")) {
-          setIsGithubUser(true);
-        } else {
-          throw error;
-        }
-      } else {
-        setSuccess(true);
-        setLastSubmitTime(Date.now());
-      }
-    } catch (err) {
-      console.error("Password reset error:", err);
-      setError("An error occurred while sending the reset link");
+        redirectTo: `${window.location.origin}/reset-password`
+      })
+
+      if (error) throw error
+
+      setSuccess(true)
+      setLastSubmitTime(now)
+    } catch (err: any) {
+      setError(err.message || "Failed to send reset email")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
