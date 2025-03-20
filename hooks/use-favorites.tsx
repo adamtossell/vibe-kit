@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import { useAuth } from '@/hooks/use-auth'
 
 export function useFavorites() {
@@ -10,7 +10,10 @@ export function useFavorites() {
   const [loading, setLoading] = useState(true)
 
   // Initialize Supabase client
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   // Fetch favorites when user is available
   useEffect(() => {
@@ -35,7 +38,7 @@ export function useFavorites() {
         if (error) throw error
 
         if (mounted) {
-          setFavorites(data?.map(f => f.kit_id) || [])
+          setFavorites(data?.map((f: { kit_id: number }) => f.kit_id) || [])
         }
       } catch (err) {
         console.error('Error fetching favorites:', err)
@@ -67,6 +70,7 @@ export function useFavorites() {
           .delete()
           .eq('user_id', user.id)
           .eq('kit_id', kitId)
+          .select()
 
         setFavorites(favorites.filter(id => id !== kitId))
       } else {
@@ -74,6 +78,7 @@ export function useFavorites() {
         await supabase
           .from('user_favorites')
           .insert([{ user_id: user.id, kit_id: kitId }])
+          .select()
 
         setFavorites([...favorites, kitId])
       }

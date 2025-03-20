@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Navbar } from "@/components/navbar"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
@@ -18,7 +18,10 @@ export default function ForgotPasswordPage() {
   const [success, setSuccess] = useState(false)
   const [isGithubUser, setIsGithubUser] = useState(false)
   const [lastSubmitTime, setLastSubmitTime] = useState(0)
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   // Function to check if a user is a GitHub user directly in the client
   const checkGithubUser = async (email: string): Promise<boolean> => {

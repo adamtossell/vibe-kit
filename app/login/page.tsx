@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Navbar } from "@/components/navbar"
-import { supabase } from "@/lib/supabase"
+import { createBrowserClient } from '@supabase/ssr'
 import { useAuth } from "@/hooks/use-auth"
 
 export default function LoginPage() {
@@ -25,6 +25,10 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isGithubSignIn, setIsGithubSignIn] = useState(false)
   const [isGithubUser, setIsGithubUser] = useState(false)
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   // Check if the user signed up with GitHub
   useEffect(() => {

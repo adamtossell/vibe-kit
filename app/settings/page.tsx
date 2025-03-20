@@ -12,6 +12,13 @@ import Link from 'next/link'
 import { Github } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
+
+// Standard error handler for Supabase operations
+const handleSupabaseError = (error: any, defaultMessage: string): string => {
+  console.error("Supabase error:", error)
+  return error?.message || defaultMessage
+}
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -22,6 +29,12 @@ export default function SettingsPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+  
+  // Initialize Supabase client
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   useEffect(() => {
     if (!loading && !user) {
@@ -91,7 +104,7 @@ export default function SettingsPage() {
     setIsUpdating(true)
 
     try {
-      const { error: updateError } = await user.update({
+      const { error: updateError } = await supabase.auth.updateUser({
         password: password
       })
 
@@ -107,7 +120,7 @@ export default function SettingsPage() {
       await signOut()
       router.push('/login')
     } catch (err: any) {
-      setError(err.message || 'Failed to update password')
+      setError(handleSupabaseError(err, 'Failed to update password'))
     } finally {
       setIsUpdating(false)
     }
