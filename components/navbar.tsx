@@ -25,9 +25,9 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-4">
+          <SubmitRepositoryModal />
           {user ? (
             <>
-              <SubmitRepositoryModal />
               {isAdmin && (
                 <Button variant="ghost" size="sm" asChild className="flex items-center gap-1 text-slate-700 hover:text-slate-900">
                   <Link href="/admin/submissions">
@@ -69,9 +69,11 @@ export function Navbar() {
                 <span className="font-bold text-xl">VibeKit</span>
               </Link>
               <nav className="flex flex-col gap-4">{/* Navigation links removed */}</nav>
+              <div className="mt-4">
+                <SubmitRepositoryModal />
+              </div>
               {user ? (
                 <div className="mt-4">
-                  <SubmitRepositoryModal />
                   {isAdmin && (
                     <Button variant="ghost" size="sm" asChild className="flex items-center gap-1 mt-4 text-slate-700 hover:text-slate-900">
                       <Link href="/admin/submissions" onClick={() => setOpen(false)}>

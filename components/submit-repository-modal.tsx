@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,9 +20,33 @@ export function SubmitRepositoryModal() {
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const { user } = useAuth()
   
+  // Reset all form states
+  const resetFormState = () => {
+    setRepoUrl("")
+    setIsSubmitting(false)
+    setFeedback(null)
+  }
+  
+  // Reset states when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      // Reset states when modal opens
+      resetFormState()
+    }
+  }, [open])
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!repoUrl) return
+    
+    // Additional check to ensure user is logged in
+    if (!user) {
+      setFeedback({
+        type: "error",
+        message: "You must be logged in to submit a kit."
+      })
+      return
+    }
     
     setIsSubmitting(true)
     setFeedback(null)
@@ -39,6 +63,7 @@ export function SubmitRepositoryModal() {
             type: "error",
             message: "Please enter a valid GitHub repository URL"
           });
+          setIsSubmitting(false); // Ensure isSubmitting is reset
           return;
         }
         validUrl = repoUrlObj.toString();
@@ -48,6 +73,7 @@ export function SubmitRepositoryModal() {
           type: "error",
           message: "Please enter a valid URL"
         });
+        setIsSubmitting(false); // Ensure isSubmitting is reset
         return;
       }
       
@@ -69,6 +95,7 @@ export function SubmitRepositoryModal() {
             type: "error",
             message: errorMessage
           })
+          setIsSubmitting(false); // Ensure isSubmitting is reset
           return;
         }
         
@@ -80,8 +107,7 @@ export function SubmitRepositoryModal() {
         // Close the modal after successful submission
         setTimeout(() => {
           setOpen(false)
-          setRepoUrl("")
-          setFeedback(null)
+          resetFormState() // Use the centralized reset function
         }, 1500)
       }
     } catch (error: any) {
@@ -103,41 +129,63 @@ export function SubmitRepositoryModal() {
     <Dialog open={open} onOpenChange={(newOpen) => {
       setOpen(newOpen)
       if (!newOpen) {
-        setFeedback(null)
+        resetFormState() // Use the centralized reset function when closing
       }
     }}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">Submit a Kit</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle className="text-slate-900">Submit a Kit</DialogTitle>
-            <DialogDescription className="text-slate-500">
-              Enter the URL of a GitHub repository. Submissions will be reviewed and added to the collection once approved.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              id="repo-url"
-              placeholder="https://github.com/username/repo"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              onClear={repoUrl ? handleClear : undefined}
-              className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 placeholder:text-slate-500"
-            />
-            {feedback && (
-              <div className={`mt-2 text-sm ${feedback.type === "success" ? "text-green-600" : "text-red-600"}`}>
-                {feedback.message}
-              </div>
-            )}
+        {user ? (
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle className="text-slate-900">Submit a Kit</DialogTitle>
+              <DialogDescription className="text-slate-500">
+                Enter the URL of a GitHub repository. Submissions will be reviewed and added to the collection once approved.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Input
+                id="repo-url"
+                placeholder="https://github.com/username/repo"
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
+                onClear={repoUrl ? handleClear : undefined}
+                className="w-full border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 placeholder:text-slate-500"
+              />
+              {feedback && (
+                <div className={`mt-2 text-sm ${feedback.type === "success" ? "text-green-600" : "text-red-600"}`}>
+                  {feedback.message}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </DialogFooter>
+          </form>
+        ) : (
+          <div>
+            <DialogHeader>
+              <DialogTitle className="text-slate-900">Submit a Kit</DialogTitle>
+              <DialogDescription className="text-slate-500">
+                You need to be logged in to submit a kit.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-6 text-center">
+              <p className="mb-4 text-slate-700">
+                Please log in to submit your GitHub repository for consideration.
+              </p>
+              <Button asChild>
+                <a href="/login">Log In</a>
+              </Button>
+              <p className="mt-4 text-sm text-slate-500">
+                Don't have an account? <a href="/signup" className="text-blue-600 hover:underline">Sign up</a>
+              </p>
+            </div>
           </div>
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
-          </DialogFooter>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   )
