@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,11 +14,9 @@ import { useAuth } from "@/hooks/use-auth"
 
 export function UserAvatar() {
   const { user, signOut } = useAuth()
-  const router = useRouter()
   
   const handleSignOut = async () => {
     await signOut()
-    router.push("/")
   }
   
   if (!user) return null
