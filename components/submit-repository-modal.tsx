@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/hooks/use-auth"
-import { createBrowserClient } from "@supabase/ssr"
+import { supabase } from "@/lib/supabase"
 
 // Standard error handler for Supabase operations
 const handleSupabaseError = (error: any, defaultMessage: string): string => {
@@ -20,12 +20,6 @@ export function SubmitRepositoryModal() {
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const { user } = useAuth()
   
-  // Initialize Supabase client directly in the component
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!repoUrl) return
